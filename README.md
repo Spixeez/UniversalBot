@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 
 
-python bot.py
+python3 b.py
 
 
 ---
