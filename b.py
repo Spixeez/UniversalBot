@@ -5,6 +5,7 @@ import asyncio
 import json
 import os
 import re
+import io
 from mcstatus import JavaServer  # Updated import for mcstatus
 import yt_dlp
 from collections import deque
@@ -703,5 +704,72 @@ async def on_interaction(interaction: Interaction):
             await interaction.channel.delete(reason=f"Ticket fermé par {interaction.user}")
         except Exception as e:
             await interaction.response.send_message(f"Erreur lors de la fermeture du ticket : {e}", ephemeral=True)
+            
+@tree.command(name="embed", description="Envoie un embed personnalisé complet avec uploads")
+@app_commands.describe(
+    ping="Utilisateur à mentionner (optionnel)",
+    titre="Titre de l'embed (optionnel)",
+    description="Description de l'embed (optionnel)",
+    footer="Texte du footer (optionnel)",
+    footer_icon="Fichier icône du footer (optionnel)",
+    vignette="Fichier vignette (optionnel)",
+    image="Fichier image principale (optionnel)",
+    champ_nom="Nom du champ (optionnel)",
+    champ_valeur="Valeur du champ (optionnel)",
+    fichier="Fichier à joindre (optionnel)",
+    couleur="Couleur de l'embed en hexadécimal (ex: #3498db)"
+)
+async def embed(
+    interaction: discord.Interaction,
+    ping: discord.User = None,
+    titre: str = None,
+    description: str = None,
+    footer: str = None,
+    footer_icon: discord.Attachment = None,
+    vignette: discord.Attachment = None,
+    image: discord.Attachment = None,
+    champ_nom: str = None,
+    champ_valeur: str = None,
+    fichier: discord.Attachment = None,
+    couleur: str = None
+):
+    mention = ping.mention if ping else None
+
+    try:
+        color = discord.Color(int(couleur.replace("#", ""), 16)) if couleur else discord.Color.blue()
+    except:
+        color = discord.Color.blue()
+
+    embed = discord.Embed(
+        title=titre,
+        description=description,
+        color=color
+    )
+
+    if footer:
+        embed.set_footer(
+            text=footer,
+            icon_url=footer_icon.url if footer_icon else None
+        )
+    if vignette:
+        embed.set_thumbnail(url=vignette.url)
+    if image:
+        embed.set_image(url=image.url)
+    if champ_nom and champ_valeur:
+        embed.add_field(name=champ_nom, value=champ_valeur, inline=False)
+
+    if fichier:
+        fichier_bytes = await fichier.read()
+        discord_file = discord.File(fp=io.BytesIO(fichier_bytes), filename=fichier.filename)
+        await interaction.response.send_message(
+            content=mention,
+            embed=embed,
+            file=discord_file
+        )
+    else:
+        await interaction.response.send_message(
+            content=mention,
+            embed=embed
+        )
 
 bot.run("token")
