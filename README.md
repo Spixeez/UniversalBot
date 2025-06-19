@@ -39,7 +39,7 @@ python3 b.py
 
 Configuration
 
-La configuration se fait directement dans le code (fichier bot.py).
+La configuration se fait directement dans le code (fichier b.py).
 
 Support d’une configuration par serveur intégrée.
 
