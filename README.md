@@ -12,7 +12,9 @@ Installation
 
 
 git clone https://github.com/spixeez/UniversalBot.git
-cd nom-du-bot
+
+
+cd UniversalBot 
 
 2. Installe les dépendances :
 
